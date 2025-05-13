@@ -242,6 +242,39 @@ class Score:
         screen.blit(self.image, self.rect)
 
 
+class EMP:
+    """
+    EMP（電磁パルス）に関するクラス
+    """
+    def __init__(self, enemies, bombs, screen):
+        """
+        EMPの初期化
+        引数1 enemies：Enemyインスタンスのグループ
+        引数2 bombs：Bombインスタンスのグループ
+        引数3 screen：画面Surface
+        """
+        self.enemies = enemies
+        self.bombs = bombs
+        self.screen = screen
+    
+    def emp_on(self):
+        """
+        EMPを発動させる
+        敵機：爆弾投下できなくなる, 爆弾：動きが鈍くなる／起爆しなくなる
+        """
+        for enemy in self.enemies:
+            enemy.interval = float('inf')
+            enemy.image = pg.transform.laplacian(enemy.image)
+        for bomb in self.bombs:
+            bomb.speed /= 2
+            bomb.state = 'inactive'
+        self.image = pg.Surface((WIDTH, HEIGHT))
+        pg.draw.rect(self.image, (255, 255, 0), (0, 0, WIDTH, HEIGHT))
+        self.image.set_alpha(128)
+        self.screen.blit(self.image, (0, 0))
+        pg.display.update()
+        time.sleep(0.05)
+
 def main():
     pg.display.set_caption("真！こうかとん無双")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -253,6 +286,8 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+
+    emp = EMP(emys, bombs, screen)
 
     tmr = 0
     clock = pg.time.Clock()
@@ -288,6 +323,11 @@ def main():
             pg.display.update()
             time.sleep(2)
             return
+        
+        key_lst = pg.key.get_pressed() #empの発動
+        if score.value >= 20 and key_lst[pg.K_e]:
+            emp.emp_on()
+            score.value -= 20
 
         bird.update(key_lst, screen)
         beams.update()
