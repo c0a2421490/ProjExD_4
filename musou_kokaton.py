@@ -316,7 +316,7 @@ def main():
                 if event.key == pg.K_SPACE:
                     beams.add(Beam(bird))
                 if event.key == pg.K_s:
-                    if score.value > -50000 and len(shields) == 0: # スコア50より大、かつ、防御壁が他に存在しない
+                    if score.value > 50 and len(shields) == 0: # スコア50より大、かつ、防御壁が他に存在しない
                         shields.add(Shield(bird, 400)) # 発動時間400フレーム
                         score.value -= 50 # 消費スコア50
         screen.blit(bg_img, [0, 0])
