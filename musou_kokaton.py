@@ -242,6 +242,27 @@ class Score:
         screen.blit(self.image, self.rect)
 
 
+class Gravity(pg.sprite.Sprite):
+    """
+    重力場のクラス
+    スコア200以上のときリターンキーで発動
+    400フレーム間敵機と爆弾を消す
+    """
+    def __init__(self, life: int = 400):
+        super().__init__()
+        self.life = life
+        self.image = pg.Surface((WIDTH, HEIGHT))
+        pg.draw.rect(self.image, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
+        self.image.set_alpha(80)
+        self.rect = self.image.get_rect()
+
+    def update(self, screen: pg.Surface):
+        self.life -= 1
+        if self.life < 0:
+            self.kill()
+        screen.blit(self.image, (0, 0))
+
+
 def main():
     pg.display.set_caption("真！こうかとん無双")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -253,6 +274,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+    grav = pg.sprite.Group() 
 
     tmr = 0
     clock = pg.time.Clock()
@@ -263,7 +285,17 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if score.value >= 200 and event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
+                score.value -= 200
+                grav.add(Gravity())
         screen.blit(bg_img, [0, 0])
+
+        for G in grav:
+            for bomb in pg.sprite.spritecollide(G, bombs, True):
+                exps.add(Explosion(bomb, 50))
+            for emy in pg.sprite.spritecollide(G, emys, True):
+                exps.add(Explosion(emy, 100))
+
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy())
@@ -296,6 +328,8 @@ def main():
         emys.draw(screen)
         bombs.update()
         bombs.draw(screen)
+        grav.update(screen)
+        grav.draw(screen)
         exps.update()
         exps.draw(screen)
         score.update(screen)
