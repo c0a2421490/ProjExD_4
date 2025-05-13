@@ -298,28 +298,6 @@ class Shield(pg.sprite.Sprite):
             self.kill()
 
 
-
-class Gravity(pg.sprite.Sprite):
-    """
-    重力場のクラス
-    スコア200以上のときリターンキーで発動
-    400フレーム間敵機と爆弾を消す
-    """
-    def __init__(self, life: int = 400):
-        super().__init__()
-        self.life = life
-        self.image = pg.Surface((WIDTH, HEIGHT))
-        pg.draw.rect(self.image, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
-        self.image.set_alpha(80)
-        self.rect = self.image.get_rect()
-
-    def update(self, screen: pg.Surface):
-        self.life -= 1
-        if self.life < 0:
-            self.kill()
-        screen.blit(self.image, (0, 0))
-
-
 class Gravity(pg.sprite.Sprite):
     """
     重力場のクラス
